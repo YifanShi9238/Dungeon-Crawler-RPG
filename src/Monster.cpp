@@ -25,6 +25,10 @@ Monster::Monster(const std::string& name, int hp, int attack, int defense,
 // - Clear the vector after deleting items
 //
 Monster::~Monster() {
+    for (Item* item: loot_table) {
+        delete item;
+    }
+    loot_table.clear();
 }
 
 
@@ -36,6 +40,8 @@ Monster::~Monster() {
 //
 void Monster::displayStats() const {
     // TODO: Display monster stats
+    std::cout << getName() << " [HP: " 
+              << getCurrentHP() << "/" << getMaxHP() << "]" << std::endl;
 }
 
 
@@ -46,6 +52,7 @@ void Monster::displayStats() const {
 //
 void Monster::addLoot(Item* item) {
     // TODO: Add item to loot table
+    if (item) loot_table.push_back(item);
 }
 
 
@@ -58,8 +65,9 @@ void Monster::addLoot(Item* item) {
 //
 std::vector<Item*> Monster::dropLoot() {
     // TODO: Return loot and transfer ownership
-    std::vector<Item*> empty;
-    return empty;  // REPLACE THIS
+    std::vector<Item*> dropped = loot_table;
+    loot_table.clear();
+    return dropped;
 }
 
 
@@ -71,7 +79,7 @@ std::vector<Item*> Monster::dropLoot() {
 //
 std::string Monster::getAttackMessage() const {
     // TODO: Return attack message
-    return "";  // REPLACE THIS
+    return getName() + " attacks!";
 }
 
 
@@ -94,6 +102,7 @@ std::string Monster::getAttackMessage() const {
 Goblin::Goblin() 
     : Monster("Goblin", 30, 5, 2, 10, 5) {
     // TODO: Add loot items
+    addLoot(new Consumable("Small Potion", "Restores 10 HP", 10));
 }
 
 
@@ -104,7 +113,7 @@ Goblin::Goblin()
 //
 std::string Goblin::getAttackMessage() const {
     // TODO: Return goblin attack message
-    return "";  // REPLACE THIS
+    return "The goblin swipes at you with its rusty dagger!";
 }
 
 
@@ -126,6 +135,7 @@ std::string Goblin::getAttackMessage() const {
 Skeleton::Skeleton()
     : Monster("Skeleton", 40, 8, 4, 20, 10) {
     // TODO: Add loot items
+    addLoot(new Weapon("Old Sword", "A dull, cracked blade", 3));
 }
 
 
@@ -136,7 +146,7 @@ Skeleton::Skeleton()
 //
 std::string Skeleton::getAttackMessage() const {
     // TODO: Return skeleton attack message
-    return "";  // REPLACE THIS
+    return "The skeleton rattles its bones and slashes with a sword!";
 }
 
 
@@ -161,6 +171,9 @@ std::string Skeleton::getAttackMessage() const {
 Dragon::Dragon()
     : Monster("Dragon", 150, 20, 10, 100, 50) {
     // TODO: Add legendary loot items
+    addLoot(new Weapon("Dragon Slayer", "Legendary sword of heroes", 10));
+    addLoot(new Armor("Dragon Scale Armor", "Armor made from dragon scales", 8));
+    addLoot(new Consumable("Greater Health Potion", "Restores 100 HP", 100));
 }
 
 
@@ -171,7 +184,7 @@ Dragon::Dragon()
 //
 std::string Dragon::getAttackMessage() const {
     // TODO: Return dragon attack message
-    return "";  // REPLACE THIS
+    return "The dragon breathes fire at you!";
 }
 
 
@@ -184,5 +197,6 @@ std::string Dragon::getAttackMessage() const {
 //
 int Dragon::calculateDamage() const {
     // TODO: Calculate damage with fire bonus
-    return 0;  // REPLACE THIS
+    int base = Monster::calculateDamage();
+    return base + 5;
 }

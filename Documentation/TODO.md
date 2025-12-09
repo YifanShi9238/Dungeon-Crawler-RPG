@@ -769,7 +769,12 @@ int main() {
      - Remove from room
    - Otherwise print error
 7. Implement `inventory()`:
-   - Call player->displayInventory()
+   - Call play
+- **Week 3** (12 hours):
+  - Day 1-2: Room class (3 hours)
+  - Day 3-4: Game class world creation (3 hours)
+  - Day 5-6: Commands and combat (4 hours)
+  - Day 7: Final testing and debugging (2 hours)er->displayInventory()
 8. Implement `useItem(const std::string& item_name)`:
    - Call player->useItem()
 9. Implement `equip(const std::string& item_name)`:

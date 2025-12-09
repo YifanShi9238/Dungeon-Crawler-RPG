@@ -1,0 +1,6 @@
+g++ src/Character.cpp src/test_character.cpp -I include -o test_character
+g++ src/Character.cpp src/Item.cpp src/test_item.cpp -I include -o test_item
+g++ src/Character.cpp src/Item.cpp src/Player.cpp src/test_player.cpp -I include -o test_player
+g++ src/Character.cpp src/Item.cpp src/Player.cpp src/Monster.cpp src/test_monster.cpp -I include -o test_monster
+g++ src/Character.cpp src/Item.cpp src/Player.cpp src/Monster.cpp src/Room.cpp src/test_room.cpp -I include -o test_room
+g++ src/Character.cpp src/Item.cpp src/Player.cpp src/Monster.cpp src/Room.cpp src/Game.cpp src/test_game.cpp -I include -o test_game

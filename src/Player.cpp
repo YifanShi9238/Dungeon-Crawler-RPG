@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 
 // TODO: Implement Player constructor
 // HINTS:
@@ -21,6 +22,10 @@ Player::Player(const std::string& name)
 //
 Player::~Player() {
     // TODO: Delete all inventory items
+    for (Item* item : inventory) {
+        delete item;
+    }
+    inventory.clear();
 }
 
 
@@ -34,6 +39,41 @@ Player::~Player() {
 //
 void Player::displayStats() const {
     // TODO: Display comprehensive player stats
+    std::cout << "============================\n";
+    std::cout << "      PLAYER STATUS\n";
+    std::cout << "============================\n";
+    std::cout << "Name: " << getName() << "\n";
+    std::cout << "Level: " << level << "\n";
+    std::cout << "HP: " << getCurrentHP() << "/" << getMaxHP() << "\n";
+
+    int attack = getAttack();
+    if (equipped_weapon != NULL) {
+        attack += equipped_weapon->getValue();
+    }
+
+    int defense = getDefense();
+    if (equipped_armor != NULL) { 
+        defense += equipped_armor->getValue();
+    }
+
+    std::cout << "Attack: " << attack;
+    if(equipped_weapon) {
+        std::cout << " (+" << equipped_weapon->getValue()
+                  << " from " << equipped_weapon->getName() << ")";
+    }
+    std::cout << "\n";
+
+    std::cout << "Defense: " << defense;
+
+    if(equipped_armor) {
+        std::cout << " (+" << equipped_armor->getValue()
+                  << " from " << equipped_armor->getName() << ")";
+    }
+    std::cout << "\n";
+
+    std::cout << "Gold: " << gold << "\n";
+    std::cout << "Experience: " << experience << "/" << (level * 100) << "\n";
+    std::cout << "============================\n\n";
 }
 
 
@@ -44,7 +84,11 @@ void Player::displayStats() const {
 //
 int Player::calculateDamage() const {
     // TODO: Calculate damage with weapon bonus
-    return 0;  // REPLACE THIS
+    int base = Character::calculateDamage();
+    if (equipped_weapon != NULL){
+        base += equipped_weapon->getValue();
+    }
+    return base;  // REPLACE THIS
 }
 
 
@@ -55,6 +99,9 @@ int Player::calculateDamage() const {
 //
 void Player::addItem(Item* item) {
     // TODO: Add item to inventory
+    if (item == NULL) return;
+    inventory.push_back(item);
+    std::cout << "Picked up: " << item->getName() << "\n";
 }
 
 
@@ -67,6 +114,22 @@ void Player::addItem(Item* item) {
 //
 void Player::removeItem(const std::string& item_name) {
     // TODO: Find and remove item from inventory
+    std::string target = item_name;
+    std::transform(target.begin(), target.end(), target.begin(), ::tolower);
+
+    for (size_t i = 0; i < inventory.size(); ++i) {
+        std::string current = inventory[i]->getName();
+        std::transform(current.begin(), current.end(), current.begin(), ::tolower);
+        
+        if (current == target) {
+            std::cout << "Removed: " << inventory[i]->getName() << "\n";
+            delete inventory[i];
+            inventory.erase(inventory.begin() + i);
+            return;
+        }
+    }
+    std::cout << "Item not found: " << item_name << "\n";
+
 }
 
 
@@ -80,6 +143,18 @@ void Player::removeItem(const std::string& item_name) {
 //
 void Player::displayInventory() const {
     // TODO: Display all items in inventory
+    std::cout << "----- Inventory -----\n";
+
+    if (inventory.empty()) {
+        std::cout << "      Empty\n";
+    } else {
+        for (Item* item: inventory) {
+            std::cout << "- " << item->getName() 
+                      << " (" << item->getType() << ")\n";
+        }
+    }
+
+    std::cout << "--------------------\n";
 }
 
 
@@ -91,6 +166,17 @@ void Player::displayInventory() const {
 //
 bool Player::hasItem(const std::string& item_name) const {
     // TODO: Check if item exists in inventory
+    std::string target = item_name;
+    std::transform(target.begin(), target.end(), target.begin(), ::tolower);
+
+    for (Item* item : inventory) {
+        std::string current = item->getName();
+        std::transform(current.begin(), current.end(), current.begin(), ::tolower);
+        
+        if (current == target) {
+            return true;
+        }
+    }
     return false;  // REPLACE THIS
 }
 
@@ -103,6 +189,17 @@ bool Player::hasItem(const std::string& item_name) const {
 //
 Item* Player::getItem(const std::string& item_name) {
     // TODO: Find and return item pointer
+    std::string target = item_name;
+    std::transform(target.begin(), target.end(), target.begin(), ::tolower);
+    
+    for (Item* item : inventory) {
+        std::string current = item->getName();
+        std::transform(current.begin(), current.end(), current.begin(), ::tolower);
+        
+        if (current == target) {
+            return item;
+        }
+    }
     return NULL;  // REPLACE THIS
 }
 
@@ -118,6 +215,24 @@ Item* Player::getItem(const std::string& item_name) {
 //
 void Player::equipWeapon(const std::string& weapon_name) {
     // TODO: Equip weapon from inventory
+    Item* item = getItem(weapon_name);
+
+    if (!item) {
+        std::cout << "No such item to equip: " << weapon_name << "\n";
+        return;
+    }
+
+    if(item->getType() != "Weapon") {
+        std::cout << "Item is not a weapon: " << weapon_name << "\n";
+        return;
+    }
+
+    if (equipped_weapon != NULL) {
+        std::cout << "Unequipped: " << equipped_weapon->getName() << "\n";
+    }
+
+    equipped_weapon = item;
+    std::cout << "Equipped weapon: " << equipped_weapon->getName() << "\n";
 }
 
 
@@ -129,6 +244,25 @@ void Player::equipWeapon(const std::string& weapon_name) {
 //
 void Player::equipArmor(const std::string& armor_name) {
     // TODO: Equip armor from inventory
+    Item* item = getItem(armor_name);
+
+    if(!item) {
+        std::cout << "No such item to equip: " << armor_name << "\n";
+        return;
+    }
+
+    if(item->getType() != "Armor") {
+        std::cout << "Item is not an armor: " << armor_name << "\n";
+        return;
+    }
+
+    if(equipped_armor != NULL) {
+        std::cout << "Unequipped: " << equipped_armor->getName() << "\n";
+    }
+
+    equipped_armor = item;
+    std::cout << "Equipped armor: " << equipped_armor->getName() << "\n";
+
 }
 
 
@@ -140,6 +274,13 @@ void Player::equipArmor(const std::string& armor_name) {
 //
 void Player::unequipWeapon() {
     // TODO: Unequip current weapon
+    if (equipped_weapon == NULL) {
+        std::cout << "No weapon is equipped.\n";
+        return;
+    }
+
+    std::cout << "Unequipped: " << equipped_weapon->getName() << "\n";
+    equipped_weapon = NULL;
 }
 
 
@@ -150,6 +291,12 @@ void Player::unequipWeapon() {
 //
 void Player::unequipArmor() {
     // TODO: Unequip current armor
+    if (equipped_armor == NULL) {
+        std::cout << "No armor is equipped.\n";
+        return;
+    }
+    std::cout << "Unequipped: " << equipped_armor->getName() << "\n";
+    equipped_armor = NULL;
 }
 
 
@@ -167,6 +314,28 @@ void Player::unequipArmor() {
 //
 void Player::useItem(const std::string& item_name) {
     // TODO: Use consumable item
+    Item* item = getItem(item_name);
+    if (!item) {
+        std::cout << "No such item: " << item_name << "\n";
+        return;
+    }
+    if (item->getType() != "Consumable") {
+        std::cout << "Item is not a consumable.\n";
+        return;
+    }
+
+    Consumable* consumable = static_cast<Consumable*>(item);
+
+    if (consumable->isUsed()) {
+        std::cout << "This consumable was already used.\n";
+        return;
+    }
+
+    int heal_amt = consumable->getHealingAmount();
+    heal(heal_amt);
+    consumable->use();
+
+    removeItem(item_name);
 }
 
 
@@ -179,6 +348,12 @@ void Player::useItem(const std::string& item_name) {
 //
 void Player::gainExperience(int exp) {
     // TODO: Add experience and check for level up
+    experience += exp;
+    std::cout << "Gained " << exp << " EXP!\n";
+
+    if (experience >= level * 100) {
+        levelUp();
+    }
 }
 
 
@@ -196,4 +371,15 @@ void Player::gainExperience(int exp) {
 //
 void Player::levelUp() {
     // TODO: Level up the player
+    level++;
+    experience = 0;
+
+    setMaxHP(getMaxHP() + 10);
+    setCurrentHP(getMaxHP());
+
+    setAttack(getAttack() + 2);
+    setDefense(getDefense() + 1);
+
+    std::cout << "\n*** LEVEL UP! You are now level " << level << "! ***\n";
+    displayStats();
 }

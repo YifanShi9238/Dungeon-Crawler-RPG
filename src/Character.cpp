@@ -1,6 +1,6 @@
 #include "Character.h"
 #include <cstdlib>
-
+#include <iostream>
 // TODO: Implement Character constructor
 // HINTS:
 // - Use initializer list to initialize all member variables
@@ -21,7 +21,8 @@ Character::Character(const std::string& name, int hp, int attack, int defense)
 // - Example: std::cout << "Character " << name << " destroyed" << std::endl;
 //
 Character::~Character() {
-    
+    // Debug print
+    // std::cout << "Character " << name << " destroyed.\n";
 }
 
 
@@ -33,7 +34,7 @@ Character::~Character() {
 int Character::calculateDamage() const {
     // TODO: Calculate and return damage
     // Base damage is attack stat plus small random bonus
-    return 0;  // REPLACE THIS
+    return attack + (rand() % 5); 
 }
 
 
@@ -48,12 +49,23 @@ int Character::calculateDamage() const {
 //
 void Character::takeDamage(int damage) {
     // TODO: Calculate actual damage after defense
-    
+    int actual = damage - defense;
+    if (actual < 0) {
+        actual = 0;
+    }
+
     // TODO: Apply damage to current_hp
+    current_hp -= actual;
     
     // TODO: Check if character died (hp <= 0)
-    
+    if (current_hp <= 0) {
+        current_hp = 0;
+        alive = false;
+    }
+
     // TODO: Print damage message with remaining HP
+    std::cout << name << " takes " << actual << " damage! {" 
+              << current_hp << "/" << max_hp << " HP}\n";
 }
 
 
@@ -66,10 +78,16 @@ void Character::takeDamage(int damage) {
 //
 void Character::heal(int amount) {
     // TODO: Add amount to current_hp
-    
+    current_hp += amount;
+
     // TODO: Cap at max_hp
-    
+    if (current_hp > max_hp) {
+        current_hp = max_hp;
+    }
+
     // TODO: Print healing message
+    std::cout << name << " heals " << amount << " HP! {"
+              << current_hp << "/" << max_hp << " HP}\n";
 }
 
 
@@ -81,6 +99,8 @@ void Character::heal(int amount) {
 //
 void Character::displayStats() const {
     // TODO: Print character stats
+    std::cout << name << " [HP: " << current_hp 
+              << "/" << max_hp << "]\n";
 }
 
 
@@ -92,4 +112,6 @@ void Character::displayStats() const {
 //
 void Character::displayStatus() const {
     // TODO: Print brief status
+    std::cout << name << " [HP: " << current_hp 
+              << "/" << max_hp << "]";
 }

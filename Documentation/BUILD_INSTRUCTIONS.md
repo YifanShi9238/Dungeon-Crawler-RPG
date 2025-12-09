@@ -482,7 +482,7 @@ If you have build issues:
 
 ```bash
 # Build
-make                    # Compile project
+make                    # Cog++ src/Character.cpp src/test_character.cpp -I include -o test_charactermpile project
 make clean              # Remove compiled files
 make clean && make      # Clean rebuild
 
