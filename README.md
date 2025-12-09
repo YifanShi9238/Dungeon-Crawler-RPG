@@ -14,7 +14,7 @@ Briefly describe your key design choices and rationale:
 
    For this project, I used an object-oriented design where `Character` serves as the base class, and `Player` and `Monster` derive from it to reuse shared combat logic such as HP, attack, defense, and damage calculation. Polymorphism is used heavily—`Item` is a base class with virtual functions overridden by `Weapon`, `Armor`, and `Consumable`, allowing the program to store different item types in the same container and handle them uniformly. This design is much cleaner than a C-style approach, since inheritance eliminates duplicated logic and polymorphism allows flexible behavior at runtime. The class hierarchy is shown below: (under fig/Class_Hierarchy.jpg)
 
-<img width="919" height="747" alt="Class_Hierarchy" src="https://github.com/user-attachments/assets/e1a2ec50-34b2-4b23-9e84-e47d524bab43" />
+<img width="919" height="747" alt="Class_Hierarchy" src="fig/Class_Hierarchy.jpg" />
 
 
 
